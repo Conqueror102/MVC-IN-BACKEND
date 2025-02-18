@@ -41,7 +41,8 @@ const getOneUser = async (req,res)=>{
 const updateUser = async (req,res)=>{
     try{
         const {name, email, password} = req.body
-        const update = await userModel.findByIdAndUpdate(req.params.id,{name, email, password},{new:true});
+        const encrypt = await bcrypt.hash(password, 10)
+        const update = await userModel.findByIdAndUpdate(req.params.id,{name, email, password:encrypt},{new:true});
         if(!update){
             return res.status(404).json({message:"user not found"});
         }
