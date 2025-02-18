@@ -30,7 +30,7 @@ const postUser = async (req,res)=>{
         
         const ifUserExist = await userModel.findOne({email})
         if(ifUserExist){
-            return res.status(401).json({message:"user not found"});
+            return res.status(401).json({message:"user already exist"});
         }
         const createUser = await userModel.create({name, email, password:hashPassword});
         res.status(201).json({message:"user created", data:createUser})
