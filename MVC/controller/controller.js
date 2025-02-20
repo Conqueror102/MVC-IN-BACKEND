@@ -27,7 +27,7 @@ const login = async (req, res)=>{
 
         const checkForExist = await taskModel.findOne({email});
 
-        if(!checkForExist || !checkForExist.password === password){
+        if(!checkForExist ){
             return res.status(404).json({message:"invalid email or password"});
         }
 
@@ -53,18 +53,19 @@ const addTask = async (req, res)=>{
 
        const {title, description} = req.body
        if(!title || !description){
-        return res.status(400).json({message:"tite and description are required"})
+        return res.status(400).json({message:"title and description are required"})
        }
 
     //    ffind the user by id
-        if(!userId){
+    const user = await taskModel.findById(userId)
+        if(!user){
             return res.status(404).json({message:"user not found"})
         }
 
         //  to add a new task to the user task
-        taskModel.task.push({title, description, complete:false})
-        await taskModel.save()
-        return res.status(201).json({message:"task added successfully"})
+        user.task.push({title, description, complete:false})
+        await user.save()
+        return res.status(201).json({message:"task added successfully",task:user.task})
     }catch(error){
         handleError(res, error)
     }
@@ -72,7 +73,7 @@ const addTask = async (req, res)=>{
 
 // update task
 
-const updateTask = async ()=>{
+const updateTask = async (req, res)=>{
     try{
         const {userId, taskId} = req.params;
         const {title, description, complete} = req.body
